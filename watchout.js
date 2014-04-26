@@ -16,6 +16,17 @@ playerOptions.startX = gameOptions.width/2;
 playerOptions.startY = gameOptions.height/2;
 playerOptions.radius = 10;
 
+// Updates current score
+var updateScore = function() {
+  var score = +d3.select('.current span').text();
+  var highScore = +d3.select('.high span').text();
+  score++;
+  d3.select('.current span').text(score);
+  if (highScore < score) {
+    d3.select('.high span').text(score);
+  }
+};
+setInterval(updateScore, 500);
 
 // ====================
 // SET UP PLAYING FIELD
@@ -68,6 +79,15 @@ var collisionDetector = function(enemy, callback) {
   }
 };
 
+// After colliding with enemy, reset score
+// If score was higher than high score, update it
+var resetBoard = function() {
+  var collisions = +d3.select('.collisions span').text();
+  d3.select('.current span').text(0);
+  collisions++;
+  d3.select('.collisions span').text(collisions);
+};
+
 // Custom tween function for enemies
 // Allows access to position during transition
 // for collision detetction
@@ -82,7 +102,7 @@ var enemyTween = function(d) {
     var newY = startY + (endY - startY)*t;
 
     //collision detection function goes here
-    collisionDetector(enemy, function() {console.log('OUCH');});
+    collisionDetector(enemy, resetBoard);
 
     enemy.attr('cx', newX)
     .attr('cy', newY);
