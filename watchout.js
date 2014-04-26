@@ -7,7 +7,7 @@ var gameOptions = {};
 
 gameOptions.height = 768;
 gameOptions.width = 1024;
-gameOptions.numEnemies = 300;
+gameOptions.numEnemies = 30;
 gameOptions.enemyRadius = 10;
 
 var playerOptions = {};
@@ -30,21 +30,21 @@ var playingField  = d3.select('svg');
 // ==============
 // SET UP ENEMIES
 // ==============
-var enemies = new Array(gameOptions.numEnemies);
+var enemiesPos = new Array(gameOptions.numEnemies);
 
 // Initialize enemies positions
 var setRandomEnemyPosition = function() {
-  for (var i = 0; i < enemies.length; i++) {
+  for (var i = 0; i < enemiesPos.length; i++) {
     var x = Math.floor(Math.random() * gameOptions.width);
     var y = Math.floor(Math.random() * gameOptions.height);
-    enemies[i] = [x, y];
+    enemiesPos[i] = [x, y];
   }
 };
 setRandomEnemyPosition();
 
 // Insert enemies into playing field
-playingField.selectAll('circle')
-.data(enemies)
+playingField.selectAll('.enemy')
+.data(enemiesPos)
 .enter()
 .append('circle')
 .attr('class', 'enemy')
@@ -52,16 +52,34 @@ playingField.selectAll('circle')
 .attr('cy', function(d) {return d[1];})
 .attr('r', gameOptions.enemyRadius);
 
+// Custom tween function for enemies
+// Allows access to position during transition
+// for collision detetction
+var enemyTween = function(d) {
+  var enemy = d3.select(this);
+  var startX = +enemy.attr('cx');
+  var startY = +enemy.attr('cy');
+  var endX = d[0];
+  var endY = d[1];
+  return function(t) {
+    var newX = startX + (endX - startX)*t;
+    var newY = startY + (endY - startY)*t;
+
+    //collision detection function goes here
+
+    enemy.attr('cx', newX)
+    .attr('cy', newY);
+  };
+};
+
 // Have enemies move every second
 setInterval(function() {
   setRandomEnemyPosition();
   playingField.selectAll('.enemy')
-  .data(enemies)
+  .data(enemiesPos)
   .transition()
   .duration(500)
-  .attr('cx', function(d) {return d[0];})
-  .attr('cy', function(d) {return d[1];})
-  .attr('r', gameOptions.enemyRadius);
+  .tween('custom', enemyTween);
 },1000);
 
 // =============
