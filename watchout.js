@@ -11,6 +11,7 @@ gameOptions.numEnemies = 30;
 gameOptions.enemyRadius = 10;
 
 var playerOptions = {};
+
 playerOptions.color = 'red';
 playerOptions.startX = gameOptions.width/2;
 playerOptions.startY = gameOptions.height/2;
@@ -57,17 +58,19 @@ setRandomEnemyPosition();
 playingField.selectAll('.enemy')
 .data(enemiesPos)
 .enter()
-.append('circle')
+.append('rect')
 .attr('class', 'enemy')
-.attr('cx', function(d) {return d[0];})
-.attr('cy', function(d) {return d[1];})
-.attr('r', gameOptions.enemyRadius);
+.attr('x', function(d) {return d[0];})
+.attr('y', function(d) {return d[1];})
+.attr('height', 2*gameOptions.enemyRadius)
+.attr('width', 2*gameOptions.enemyRadius);
+
 
 // Collision detection between given enemy and player
 var collisionDetector = function(enemy, callback) {
   var player = d3.select('.player');
-  var enemyX = +enemy.attr('cx');
-  var enemyY = +enemy.attr('cy');
+  var enemyX = +enemy.attr('x')+gameOptions.enemyRadius;
+  var enemyY = +enemy.attr('y')+gameOptions.enemyRadius;
   var playerX = +player.attr('cx');
   var playerY = +player.attr('cy');
   var enemyRadius = gameOptions.enemyRadius;
@@ -93,8 +96,8 @@ var resetBoard = function() {
 // for collision detetction
 var enemyTween = function(d) {
   var enemy = d3.select(this);
-  var startX = +enemy.attr('cx');
-  var startY = +enemy.attr('cy');
+  var startX = +enemy.attr('x');
+  var startY = +enemy.attr('y');
   var endX = d[0];
   var endY = d[1];
   return function(t) {
@@ -104,8 +107,8 @@ var enemyTween = function(d) {
     //collision detection function goes here
     collisionDetector(enemy, resetBoard);
 
-    enemy.attr('cx', newX)
-    .attr('cy', newY);
+    enemy.attr('x', newX)
+    .attr('y', newY);
   };
 };
 
@@ -153,23 +156,3 @@ playingField.selectAll('.player')
 .attr('r', playerOptions.radius)
 .style('fill', playerOptions.color)
 .call(drag);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
