@@ -8,7 +8,7 @@ var gameOptions = {};
 gameOptions.height = 768;
 gameOptions.width = 1024;
 gameOptions.numEnemies = 30;
-gameOptions.enemyRadius = 10;
+gameOptions.enemyRadius = 30;
 
 var playerOptions = {};
 
@@ -58,7 +58,8 @@ setRandomEnemyPosition();
 playingField.selectAll('.enemy')
 .data(enemiesPos)
 .enter()
-.append('rect')
+.append('image')
+.attr('xlink:href', 'shuriken.png')
 .attr('class', 'enemy')
 .attr('x', function(d) {return d[0];})
 .attr('y', function(d) {return d[1];})
