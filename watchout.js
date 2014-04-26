@@ -52,6 +52,22 @@ playingField.selectAll('.enemy')
 .attr('cy', function(d) {return d[1];})
 .attr('r', gameOptions.enemyRadius);
 
+// Collision detection between given enemy and player
+var collisionDetector = function(enemy, callback) {
+  var player = d3.select('.player');
+  var enemyX = +enemy.attr('cx');
+  var enemyY = +enemy.attr('cy');
+  var playerX = +player.attr('cx');
+  var playerY = +player.attr('cy');
+  var enemyRadius = gameOptions.enemyRadius;
+  var playerRadius = playerOptions.radius;
+
+  var distance = Math.sqrt(Math.pow(enemyX - playerX, 2) + Math.pow(enemyY - playerY, 2));
+  if ( distance < enemyRadius + playerRadius) {
+    callback();
+  }
+};
+
 // Custom tween function for enemies
 // Allows access to position during transition
 // for collision detetction
@@ -66,6 +82,7 @@ var enemyTween = function(d) {
     var newY = startY + (endY - startY)*t;
 
     //collision detection function goes here
+    collisionDetector(enemy, function() {console.log('OUCH');});
 
     enemy.attr('cx', newX)
     .attr('cy', newY);
